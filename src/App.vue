@@ -1,6 +1,5 @@
 <template>
   <div id="app">
-    <p>liangs</p>
     <!-- 根路由出口 -->
     <router-view />
   </div>
