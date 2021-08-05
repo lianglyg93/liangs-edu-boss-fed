@@ -1,6 +1,7 @@
 import Vue from "vue";
 import VueRouter, { RouteConfig } from "vue-router";
 import layout from "@/layout/index.vue";
+import store from "@/store";
 
 Vue.use(VueRouter);
 
@@ -14,6 +15,7 @@ const routes: Array<RouteConfig> = [
   {
     path: "/",
     component: layout,
+    meta: { requiresAuth: true },
     children: [
       {
         path: "/",
@@ -79,6 +81,23 @@ const routes: Array<RouteConfig> = [
 
 const router = new VueRouter({
   routes,
+});
+
+router.beforeEach((to, from, next) => {
+  // 检验登录
+  if (to.matched.some((record) => record.meta.requiresAuth)) {
+    if (store.state.userInfo?.access_token) {
+      return next();
+    }
+    next({
+      name: "login",
+      query: {
+        redirectUrl: to.fullPath,
+      },
+    });
+    return;
+  }
+  next();
 });
 
 export default router;

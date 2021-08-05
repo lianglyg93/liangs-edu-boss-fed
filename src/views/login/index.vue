@@ -31,19 +31,18 @@
         <el-button
           type="primary"
           class="login-btn"
-          @click="submitForm('ruleForm')"
+          @click="submitForm()"
           :loading="isLoginLoading"
           >登录</el-button
         >
-        <!-- <el-button @click="resetForm('ruleForm')">重置</el-button> -->
       </el-form-item>
     </el-form>
   </div>
 </template>
-<script>
+<script lang="ts">
 import Vue from "vue";
-import request from "@/utils/request";
-import qs from "qs";
+import { loginIn } from "@/services/user";
+import { Form } from "element-ui";
 export default Vue.extend({
   name: "loginPage",
   data() {
@@ -75,29 +74,20 @@ export default Vue.extend({
     };
   },
   methods: {
-    submitForm(formName) {
-      this.$refs[formName].validate(async (valid) => {
+    submitForm() {
+      (this.$refs.ruleForm as Form).validate(async (valid) => {
         if (valid) {
           this.isLoginLoading = true;
-          const { data } = await request({
-            method: "POST",
-            headers: {
-              "content-type": "application/x-www-form-urlencoded",
-            },
-            url: "/front/user/login",
-            data: qs.stringify(this.ruleForm),
-          });
-
+          const { data } = await loginIn(this.ruleForm);
           this.isLoginLoading = false;
           if (data.state !== 1) {
             return this.$message.error(data.message);
           }
-          this.$router.push({
-            name: "home",
-          });
+          this.$store.commit("setUser", data.content);
+          const { redirectUrl = "/" } = this.$route.query;
+          console.log(redirectUrl);
+          this.$router.push(redirectUrl as string);
         } else {
-          console.log("error submit!!");
-
           return false;
         }
       });

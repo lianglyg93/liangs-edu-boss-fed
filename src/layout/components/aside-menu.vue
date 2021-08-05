@@ -8,11 +8,13 @@
       <h1 v-show="!isCollapse">Edu Boss</h1>
     </a>
     <el-menu
-      default-active="1-4-1"
+      default-active="4"
       class="el-menu-vertical-demo"
       @open="handleOpen"
       @close="handleClose"
       :collapse="isCollapse"
+      active-text-color="#ffd04b"
+      router
     >
       <el-submenu index="1">
         <template slot="title">
@@ -72,6 +74,7 @@ export default Vue.extend({
     handleOpen(key: string, keyPath: string): void {
       console.log(key, keyPath);
     },
+
     handleClose(key: string, keyPath: string): void {
       console.log(key, keyPath);
     },

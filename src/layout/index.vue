@@ -12,10 +12,10 @@
   </el-container>
 </template>
 
-<script>
+<script lang="ts">
 import Vue from "vue";
-import asideMenu from "./components/aside-menu";
-import headerCrumb from "./components/header-crumb";
+import asideMenu from "./components/aside-menu.vue";
+import headerCrumb from "./components/header-crumb.vue";
 export default Vue.extend({
   components: {
     asideMenu,
