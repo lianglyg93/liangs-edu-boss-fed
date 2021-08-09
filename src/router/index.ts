@@ -50,6 +50,14 @@ const routes: Array<RouteConfig> = [
           import(/* webpackChunkName: 'menu' */ "@/views/menu/index.vue"),
       },
       {
+        path: "/addOrEdit",
+        name: "addOrEdit",
+        component: () =>
+          import(
+            /* webpackChunkName: 'addOrEdit.vue' */ "@/views/menu/addOrEdit.vue"
+          ),
+      },
+      {
         path: "/resource",
         name: "resource",
         component: () =>
