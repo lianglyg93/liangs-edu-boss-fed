@@ -7,20 +7,39 @@
         >
       </div>
       <el-table :data="menuList" stripe style="width: 100%">
-        <el-table-column type="index" label="编号"></el-table-column>
+        <el-table-column
+          type="index"
+          label="编号"
+          align="center"
+        ></el-table-column>
         <el-table-column
           prop="name"
           label="菜单名称"
-          width="180"
+          min-width="300"
+          align="center"
         ></el-table-column>
         <el-table-column
           prop="level"
           label="菜单级数"
-          width="180"
+          min-width="100"
+          align="center"
         ></el-table-column>
-        <el-table-column prop="icon" label="前端图标"></el-table-column>
-        <el-table-column prop="orderNum" label="排序"></el-table-column>
-        <el-table-column fixed="right" label="操作" width="100">
+        <el-table-column
+          prop="icon"
+          label="前端图标"
+          align="center"
+        ></el-table-column>
+        <el-table-column
+          prop="orderNum"
+          label="排序"
+          align="center"
+        ></el-table-column>
+        <el-table-column
+          fixed="right"
+          label="操作"
+          min-width="100"
+          align="center"
+        >
           <template slot-scope="scope">
             <el-button
               type="text"
