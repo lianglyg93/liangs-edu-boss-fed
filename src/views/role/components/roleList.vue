@@ -7,7 +7,7 @@
         > -->
         <el-form
           :inline="true"
-          ref="resourceForm"
+          ref="roleForm"
           label-position="right"
           :model="form"
           label-width="80px"
@@ -16,7 +16,7 @@
             <el-input v-model="form.name" placeholder="角色名称"></el-input>
           </el-form-item>
           <el-form-item style="float: right">
-            <el-button type="primary" @click="onSubmit" :disabled="isLoading"
+            <el-button type="primary" @click="queryRoles" :disabled="isLoading"
               >查询搜索</el-button
             >
             <el-button @click="onReset" :disabled="isLoading">重置</el-button>
@@ -61,29 +61,76 @@
         </el-table-column>
         <el-table-column align="center" fixed="right" label="操作" width="240">
           <template slot-scope="scope">
-            <el-button type="text" size="small">分配菜单</el-button>
-            <el-button type="text" size="small">分配资源</el-button>
-            <el-button type="text" size="small" @click="editRole(scope.row)"
+            <el-button
+              type="text"
+              size="small"
+              @click="
+                $router.push({
+                  name: 'allocMenu',
+                  params: {
+                    roleId: scope.row.id,
+                  },
+                })
+              "
+              >分配菜单</el-button
+            >
+            <el-button
+              type="text"
+              size="small"
+              @click="
+                $router.push({
+                  name: 'allocResource',
+                  params: {
+                    roleId: scope.row.id,
+                  },
+                })
+              "
+              >分配资源</el-button
+            >
+            <el-button
+              type="text"
+              size="small"
+              @click="handleEditRole(scope.row)"
               >编辑</el-button
             >
-            <el-button type="text" size="small" @click="deleteRole(scope.row)"
+            <el-button
+              type="text"
+              size="small"
+              @click="handleDeleteRole(scope.row)"
               >删除</el-button
             >
           </template>
         </el-table-column>
       </el-table>
     </el-card>
+    <!-- 弹出框 -->
+    <el-dialog
+      :title="`${isEdit ? '编辑' : '添加'}角色`"
+      width="30%"
+      center
+      :visible.sync="dialogFormVisible"
+    >
+      <add-or-edit-role
+        v-if="dialogFormVisible"
+        :isEdit="isEdit"
+        :editId="editId"
+        @closeDialog="closeDialog"
+      />
+    </el-dialog>
   </div>
 </template>
 <script lang="ts">
 import Vue from "vue";
 import moment from "moment";
-import { getRoles } from "@/services/role";
-// deleteRole
-// import { Form } from "element-ui";
+import { getRoles, deleteRole } from "@/services/role";
+import { Form } from "element-ui";
+import addOrEditRole from "./addOrEditRole.vue";
 
 export default Vue.extend({
   name: "roleList",
+  components: {
+    addOrEditRole,
+  },
   data() {
     return {
       roleList: [],
@@ -91,6 +138,9 @@ export default Vue.extend({
         name: "",
       },
       isLoading: false,
+      isEdit: false,
+      dialogFormVisible: false,
+      editId: "",
     };
   },
   filters: {
@@ -111,39 +161,45 @@ export default Vue.extend({
       }
       this.isLoading = false;
     },
-    // onSubmit() {
-    //   this.queryParams.current = 1;
-    //   this.queryResource();
-    // },
-    // onReset() {
-    //   (this.$refs.resourceForm as Form).resetFields();
-    //   this.queryParams.current = 1;
-    //   this.queryResource();
-    // },
-    editRole(row: any) {
-      console.log(row);
+    onReset() {
+      (this.$refs.roleForm as Form).resetFields();
+      this.queryRoles();
     },
-    deleteRole(row: any) {
+    handleEditRole(row: any) {
+      this.editId = row.id;
+      this.isEdit = true;
+      this.dialogFormVisible = true;
+    },
+    handleDeleteRole(row: any) {
       this.$confirm("确定是否要删除?", "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         type: "warning",
       })
         .then(async () => {
-          // const { data } = await deleteResource(row.id);
-          // if (data.code === "000000") {
-          //   this.$message.success("删除成功");
-          //   this.queryResource();
-          // } else {
-          //   this.$message.error("删除失败");
-          // }
+          const { data } = await deleteRole(row.id);
+          if (data.code === "000000") {
+            this.$message.success("删除成功");
+            this.queryRoles();
+          } else {
+            this.$message.error("删除失败");
+          }
         })
         .catch(() => {
-          // this.$message({
-          //   type: "info",
-          //   message: "已取消删除",
-          // });
+          this.$message({
+            type: "info",
+            message: "已取消删除",
+          });
         });
+    },
+    addResource() {
+      this.editId = "";
+      this.isEdit = false;
+      this.dialogFormVisible = true;
+    },
+    closeDialog() {
+      this.queryRoles();
+      this.dialogFormVisible = false;
     },
   },
 });

@@ -68,3 +68,14 @@ export const deleteResourceCategory = (id: string | number = -1) => {
     url: `/boss/resource/category/${id}`,
   });
 };
+
+// 获取角色拥有的资源列表
+export const getRoleResources = (roleId: string | number = -1) => {
+  return request({
+    method: "GET",
+    url: "/boss/resource/getRoleResources",
+    params: {
+      roleId,
+    },
+  });
+};

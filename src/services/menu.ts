@@ -49,3 +49,32 @@ export const deleteMenu = (id: string | number) => {
     },
   });
 };
+
+export const getMenuNodeList = () => {
+  return request({
+    method: "GET",
+    url: "/boss/menu/getMenuNodeList",
+  });
+};
+type AllocateRole = {
+  roleId: number | string;
+  menuIdList: number[] | string[];
+};
+
+export const allocateRoleMenus = (data: AllocateRole) => {
+  return request({
+    method: "POST",
+    url: "/boss/menu/allocateRoleMenus",
+    data,
+  });
+};
+
+export const getRoleMenus = (roleId: string | number) => {
+  return request({
+    method: "GET",
+    url: "/boss/menu/getRoleMenus",
+    params: {
+      roleId,
+    },
+  });
+};
