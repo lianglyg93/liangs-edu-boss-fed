@@ -13,7 +13,7 @@
     >
       <el-checkbox
         v-for="resource in resourceInfo.resourceList"
-        :label="resource.name"
+        :label="resource.id"
         :key="resource.id"
         class="select-resource-item"
         >{{ resource.name }}</el-checkbox
@@ -22,7 +22,6 @@
   </div>
 </template>
 <script lang="ts">
-const cityOptions = ["上海", "北京", "广州", "深圳"];
 import Vue from "vue";
 
 export default Vue.extend({
@@ -31,25 +30,59 @@ export default Vue.extend({
       type: Object,
       default: () => ({}),
     },
+    index: {
+      type: Number,
+      default: 0,
+    },
   },
   data() {
     return {
-      checkAll: false,
-      checkedResource: ["上海"],
-      cities: cityOptions,
-      isIndeterminate: true,
+      checkAll: false, //是否全选
+      checkedResource: [], //选择的资源
+      allResource: [], //所有资源数据
+      isIndeterminate: false,
     };
   },
+  created() {
+    this.initResourceData();
+  },
+  watch: {
+    checkedResource(val) {
+      this.$emit("changeResource", {
+        val,
+        index: this.index,
+      });
+    },
+    resourceInfo: {
+      handler(val) {
+        console.log("-----");
+      },
+      deep: true,
+      immediate: true,
+    },
+  },
   methods: {
+    initResourceData() {
+      const { resourceList } = this.resourceInfo;
+      resourceList &&
+        resourceList.forEach((resourceInfo: any) => {
+          const id = resourceInfo.id as never;
+          this.allResource.push(id);
+          if (resourceInfo.selected) {
+            this.checkedResource.push(id);
+          }
+        });
+      this.checkAll = this.allResource.length === this.checkedResource.length;
+    },
     handleCheckAllChange(val: any) {
-      this.checkedResource = val ? cityOptions : [];
+      this.checkedResource = val ? this.allResource : [];
       this.isIndeterminate = false;
     },
     handleCheckedResourceChange(value: any) {
       let checkedCount = value.length;
-      this.checkAll = checkedCount === this.cities.length;
+      this.checkAll = checkedCount === this.allResource.length;
       this.isIndeterminate =
-        checkedCount > 0 && checkedCount < this.cities.length;
+        checkedCount > 0 && checkedCount < this.allResource.length;
     },
   },
 });
@@ -68,7 +101,7 @@ export default Vue.extend({
     box-sizing: border-box;
   }
   .el-checkbox-group {
-    padding-left: 20px;
+    padding: 20px;
     width: 100%;
     min-height: 40px;
     box-sizing: border-box;

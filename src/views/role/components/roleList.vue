@@ -80,7 +80,7 @@
               @click="
                 $router.push({
                   name: 'allocResource',
-                  params: {
+                  query: {
                     roleId: scope.row.id,
                   },
                 })

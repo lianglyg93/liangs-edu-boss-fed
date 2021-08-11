@@ -95,7 +95,6 @@ const routes: Array<RouteConfig> = [
           import(
             /* webpackChunkName: 'allocResource' */ "@/views/role/allocResource.vue"
           ),
-        props: true,
       },
       {
         path: "/user",
