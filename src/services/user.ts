@@ -6,7 +6,7 @@ interface User {
   phone: string;
   password: string;
 }
-
+// 登录
 export const loginIn = (data: User) => {
   return request({
     method: "POST",
@@ -17,6 +17,7 @@ export const loginIn = (data: User) => {
     data: qs.stringify(data),
   });
 };
+// 获取用户信息
 export const getUserInfo = () => {
   return request({
     method: "GET",
@@ -24,5 +25,14 @@ export const getUserInfo = () => {
     // headers: {
     //   Authorization: store.state.userInfo.access_token,
     // },
+  });
+};
+
+//分页查询用户信息
+export const getUserPages = (data: User) => {
+  return request({
+    method: "POST",
+    url: "/boss/user/getUserPages",
+    data,
   });
 };
