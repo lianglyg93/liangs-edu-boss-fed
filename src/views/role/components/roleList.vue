@@ -2,9 +2,6 @@
   <div class="resource-list">
     <el-card class="box-card">
       <div slot="header" class="clearfix">
-        <!-- <el-button size="small" @click="$router.push({ name: 'addOrEdit' })"
-          >资源管理</el-button
-        > -->
         <el-form
           :inline="true"
           ref="roleForm"

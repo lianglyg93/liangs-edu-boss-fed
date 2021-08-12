@@ -29,7 +29,7 @@ export const getUserInfo = () => {
 };
 
 //分页查询用户信息
-export const getUserPages = (data: User) => {
+export const getUserPages = (data: any) => {
   return request({
     method: "POST",
     url: "/boss/user/getUserPages",

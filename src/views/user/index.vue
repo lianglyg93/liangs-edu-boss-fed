@@ -2,9 +2,6 @@
   <div class="resource-list">
     <el-card class="box-card">
       <div slot="header" class="clearfix">
-        <!-- <el-button size="small" @click="$router.push({ name: 'addOrEdit' })"
-          >资源管理</el-button
-        > -->
         <el-form
           :inline="true"
           ref="resourceForm"
@@ -12,95 +9,82 @@
           :model="queryParams"
           label-width="80px"
         >
-          <el-form-item prop="name" label="资源名称">
-            <el-input v-model="queryParams.name"></el-input>
+          <el-form-item prop="phone" label="手机号">
+            <el-input
+              v-model="queryParams.phone"
+              placeholder="请输入手机号"
+            ></el-input>
           </el-form-item>
-          <el-form-item prop="url" label="资源路径">
-            <el-input v-model="queryParams.url"></el-input>
-          </el-form-item>
-          <el-form-item prop="categoryId" label="资源分类">
-            <el-select
-              v-model="queryParams.categoryId"
-              placeholder="请选择资源分类"
-              clearable
+          <el-form-item label="资源路径">
+            <el-date-picker
+              v-model="selectData"
+              type="daterange"
+              :picker-options="pickerOptions"
+              range-separator="至"
+              start-placeholder="开始日期"
+              end-placeholder="结束日期"
+              align="right"
             >
-              <el-option
-                v-for="item in resourceCategories"
-                :key="item.id"
-                :label="item.name"
-                :value="item.id"
-              ></el-option>
-            </el-select>
+            </el-date-picker>
           </el-form-item>
-          <el-form-item style="float: right">
-            <el-button type="primary" @click="onSubmit" :disabled="isLoading"
-              >查询搜索</el-button
-            >
-            <el-button @click="onReset" :disabled="isLoading">重置</el-button>
+          <el-form-item>
+            <el-button @click="onSubmit" :disabled="isLoading">查询</el-button>
           </el-form-item>
         </el-form>
-
-        <div class="btn-wrap">
-          <el-button size="small" @click="addResource">添加</el-button>
-          <!-- :disabled="isLoading" -->
-          <el-button
-            size="small"
-            @click="$router.push({ name: 'resourceCategory' })"
-            >资源分类</el-button
-          >
-        </div>
       </div>
       <el-table
         v-loading="isLoading"
-        :data="resourceList"
+        :data="userList"
         stripe
         style="width: 100%"
       >
         <el-table-column
           prop="id"
-          label="编号"
+          label="用户ID"
           align="center"
-          width="50"
         ></el-table-column>
+        <el-table-column label="头像" align="center">
+          <template slot-scope="scope">
+            <img
+              class="user-portrait"
+              :src="scope.row.portrait || defaultPortraitUrl"
+              alt=""
+            />
+          </template>
+        </el-table-column>
         <el-table-column
           prop="name"
-          label="资源名称"
+          label="用户名"
           align="center"
-          min-width="200"
         ></el-table-column>
         <el-table-column
-          prop="url"
-          label="资源路径"
+          prop="phone"
+          label="手机号"
           align="center"
-          min-width="300"
         ></el-table-column>
-        <el-table-column
-          prop="description"
-          label="描述"
-          align="center"
-          min-width="200"
-        ></el-table-column>
-        <!-- <el-table-column prop="createdTime" label="添加时间"></el-table-column> -->
-        <el-table-column label="添加时间" width="180" align="center">
+        <el-table-column label="注册时间" align="center" min-width="160">
           <template slot-scope="scope">
             <span style="margin-left: 10px">{{
-              scope.row.createdTime | getDate
+              scope.row.createTime | getDate
             }}</span>
           </template>
         </el-table-column>
-        <el-table-column align="center" fixed="right" label="操作" width="100">
+        <el-table-column label="状态" align="center">
           <template slot-scope="scope">
-            <el-button
-              type="text"
-              size="small"
-              @click="handleEditResource(scope.row)"
-              >编辑</el-button
-            >
-            <el-button
-              type="text"
-              size="small"
-              @click="handleDeletResource(scope.row)"
-              >删除</el-button
+            <span
+              class="status"
+              :class="
+                scope.row.status === 'ENABLE'
+                  ? 'status-success'
+                  : 'status-error'
+              "
+            ></span>
+          </template>
+        </el-table-column>
+        <el-table-column align="center" fixed="right" label="操作">
+          <template slot-scope="scope">
+            <el-button type="text" size="small" @click="setUserRole(scope.row)"
+              >分配角色</el-button
             >
           </template>
         </el-table-column>
@@ -108,54 +92,91 @@
       <el-pagination
         @size-change="handleSizeChange"
         @current-change="handleCurrentChange"
-        :current-page="queryParams.current"
+        :current-page="queryParams.currentPage"
         :page-sizes="[10, 15, 20]"
-        :page-size="queryParams.size"
+        :page-size="queryParams.pageSize"
         layout="total, sizes, prev, pager, next, jumper"
         :total="totalCount"
         :disabled="isLoading"
       >
       </el-pagination>
     </el-card>
-    <!-- 添加编辑资源 -->
-    <add-or-edit-resource
-      v-model="showAddResource"
-      :editId="editId"
-      :resourceCategories="resourceCategories"
-      @queryResource="queryResource"
-    />
+    <!-- 分配角色 -->
+    <el-dialog
+      title="分配角色"
+      width="30%"
+      center
+      :visible.sync="dialogFormVisible"
+    >
+      <set-user-role
+        v-if="dialogFormVisible"
+        :role-list="roleList"
+        :user-id="userId"
+        @closeDialog="closeDialog"
+      />
+    </el-dialog>
   </div>
 </template>
 <script lang="ts">
 import Vue from "vue";
 import moment from "moment";
-import {
-  getResourcePages,
-  getAllCategory,
-  deleteResource,
-} from "@/services/resource";
-import { Form } from "element-ui";
-import addOrEditResource from "./components/addOrEditResource.vue";
+import { getUserPages } from "@/services/user";
+import { getAllRoles } from "@/services/role";
+import setUserRole from "./components/setUserRole.vue";
 
 export default Vue.extend({
   components: {
-    addOrEditResource,
+    setUserRole,
   },
   data() {
     return {
-      resourceList: [],
+      pickerOptions: {
+        shortcuts: [
+          {
+            text: "最近一周",
+            onClick(picker: { $emit: (arg0: string, arg1: Date[]) => void }) {
+              const end = new Date();
+              const start = new Date();
+              start.setTime(start.getTime() - 3600 * 1000 * 24 * 7);
+              picker.$emit("pick", [start, end]);
+            },
+          },
+          {
+            text: "最近一个月",
+            onClick(picker: { $emit: (arg0: string, arg1: Date[]) => void }) {
+              const end = new Date();
+              const start = new Date();
+              start.setTime(start.getTime() - 3600 * 1000 * 24 * 30);
+              picker.$emit("pick", [start, end]);
+            },
+          },
+          {
+            text: "最近三个月",
+            onClick(picker: { $emit: (arg0: string, arg1: Date[]) => void }) {
+              const end = new Date();
+              const start = new Date();
+              start.setTime(start.getTime() - 3600 * 1000 * 24 * 90);
+              picker.$emit("pick", [start, end]);
+            },
+          },
+        ],
+      },
+      selectData: "",
+      defaultPortraitUrl:
+        "http://www.lgstatic.com/thumbnail_100x100/i/image2/M01/5E/65/CgotOVszSAOANi0LAAAse2IVWAE693.jpg",
+      userList: [],
       queryParams: {
+        currentPage: 1, //第几页
+        pageSize: 10, //一页多少条
         phone: "",
-        url: "",
-        categoryId: null,
-        current: 1, //第几页
-        size: 10, //一页多少条
+        startCreateTime: "",
+        endCreateTime: "",
       },
       totalCount: 0,
       isLoading: false,
-      resourceCategories: [],
-      showAddResource: false,
-      editId: "",
+      roleList: [],
+      dialogFormVisible: false,
+      userId: "",
     };
   },
   filters: {
@@ -165,73 +186,56 @@ export default Vue.extend({
   },
   created() {
     this.queryResource();
-    this.queryAllCategory();
   },
   methods: {
     async queryResource() {
       this.isLoading = true;
-      const { data } = await getResourcePages(this.queryParams);
+      const { data } = await getUserPages(this.queryParams);
       if (data.code === "000000") {
         console.log(data.data);
-        this.resourceList = data.data.records;
+        this.userList = data.data.records;
         this.totalCount = data.data.total;
+        this.isLoading = false;
       }
-      this.isLoading = false;
     },
-    async queryAllCategory() {
-      const { data } = await getAllCategory();
-      console.log(data);
+    async queryAllRoles() {
+      this.isLoading = true;
+      const { data } = await getAllRoles();
       if (data.code === "000000") {
-        this.resourceCategories = data.data;
+        this.roleList = data.data;
+        this.isLoading = false;
+        this.dialogFormVisible = true;
       }
     },
-    handleEditResource(row: any) {
-      this.editId = row.id;
-      this.showAddResource = true;
+    setUserRole(row: any) {
+      this.queryAllRoles();
+      this.userId = row.id;
     },
     onSubmit() {
-      this.queryParams.current = 1;
+      if (this.selectData?.[0]) {
+        this.queryParams.startCreateTime = moment(this.selectData[0]).format(
+          "YYYY-MM-DD"
+        );
+        this.queryParams.endCreateTime = moment(this.selectData[1]).format(
+          "YYYY-MM-DD"
+        );
+      }
+      this.queryParams.currentPage = 1;
+      console.log(this.queryParams);
       this.queryResource();
-    },
-    onReset() {
-      (this.$refs.resourceForm as Form).resetFields();
-      this.queryParams.current = 1;
-      this.queryResource();
-    },
-    addResource() {
-      this.editId = "";
-      this.showAddResource = true;
-    },
-    handleDeletResource(row: any) {
-      this.$confirm("确定是否要删除?", "提示", {
-        confirmButtonText: "确定",
-        cancelButtonText: "取消",
-        type: "warning",
-      })
-        .then(async () => {
-          const { data } = await deleteResource(row.id);
-          if (data.code === "000000") {
-            this.$message.success("删除成功");
-            this.queryResource();
-          } else {
-            this.$message.error("删除失败");
-          }
-        })
-        .catch(() => {
-          // this.$message({
-          //   type: "info",
-          //   message: "已取消删除",
-          // });
-        });
     },
     handleSizeChange(val: number) {
-      this.queryParams.size = val;
-      this.queryParams.current = 1;
+      this.queryParams.pageSize = val;
+      this.queryParams.currentPage = 1;
       this.queryResource();
     },
     handleCurrentChange(val: number) {
-      this.queryParams.current = val;
+      this.queryParams.currentPage = val;
       this.queryResource();
+    },
+    closeDialog() {
+      this.queryResource();
+      this.dialogFormVisible = false;
     },
   },
 });
@@ -244,5 +248,26 @@ export default Vue.extend({
 .btn-wrap {
   padding-top: 20px;
   border-top: 1px solid #ebeef5;
+}
+.user-portrait {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  box-sizing: border-box;
+  vertical-align: middle;
+}
+.status {
+  display: inline-block;
+  cursor: pointer;
+  width: 0.875rem;
+  height: 0.875rem;
+  vertical-align: middle;
+  border-radius: 50%;
+}
+.status-success {
+  background: #51cf66;
+}
+.status-error {
+  background: red;
 }
 </style>

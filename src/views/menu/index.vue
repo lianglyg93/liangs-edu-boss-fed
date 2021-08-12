@@ -2,7 +2,7 @@
   <div class="menu-list">
     <el-card class="box-card">
       <div slot="header" class="clearfix">
-        <el-button size="small" @click="$router.push({ name: 'addOrEdit' })"
+        <el-button size="small" @click="$router.push({ name: 'addOrEditMenu' })"
           >添加菜单</el-button
         >
       </div>
@@ -81,7 +81,7 @@ export default Vue.extend({
     },
     handleEditMenu(row: any) {
       this.$router.push({
-        name: "addOrEdit",
+        name: "addOrEditMenu",
         params: {
           id: row.id,
         },

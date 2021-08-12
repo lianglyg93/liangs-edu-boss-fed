@@ -44,17 +44,25 @@ const routes: Array<RouteConfig> = [
           import(/* webpackChunkName: 'course' */ "@/views/course/index.vue"),
       },
       {
+        path: "/addOrEditCourse",
+        name: "addOrEditCourse",
+        component: () =>
+          import(
+            /* webpackChunkName: 'course' */ "@/views/course/addOrEditCourse.vue"
+          ),
+      },
+      {
         path: "/menu",
         name: "menu",
         component: () =>
           import(/* webpackChunkName: 'menu' */ "@/views/menu/index.vue"),
       },
       {
-        path: "/addOrEdit",
-        name: "addOrEdit",
+        path: "/addOrEditMenu",
+        name: "addOrEditMenu",
         component: () =>
           import(
-            /* webpackChunkName: 'addOrEdit.vue' */ "@/views/menu/addOrEdit.vue"
+            /* webpackChunkName: 'addOrEditMenu.vue' */ "@/views/menu/addOrEditMenu.vue"
           ),
       },
       {
