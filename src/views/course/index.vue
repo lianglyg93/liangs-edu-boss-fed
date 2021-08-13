@@ -164,6 +164,12 @@ export default Vue.extend({
     },
     setUserRole(row: any) {
       this.userId = row.id;
+      this.$router.push({
+        name: "addOrEditCourse",
+        query: {
+          courseId: row.id,
+        },
+      });
     },
     onSubmit() {
       this.queryParams.currentPage = 1;
