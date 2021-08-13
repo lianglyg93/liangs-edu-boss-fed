@@ -61,32 +61,10 @@
       </div>
       <div v-show="activeStep === 1">
         <el-form-item label="课程封面" prop="courseListImg">
-          <el-upload
-            v-model="course.courseListImg"
-            :limit="5"
-            class="avatar-uploader"
-            action="https://jsonplaceholder.typicode.com/posts/"
-            :show-file-list="false"
-            :on-success="handleAvatarSuccess"
-            :before-upload="beforeAvatarUpload"
-          >
-            <!-- <img v-if="imageUrl" :src="imageUrl" class="avatar" />
-            <i v-else class="el-icon-plus avatar-uploader-icon"></i> -->
-          </el-upload>
+          <upload-image v-model="course.courseListImg" />
         </el-form-item>
-        <el-form-item label="解锁封面" prop="courseImgUrl">
-          <el-upload
-            v-model="course.courseImgUrl"
-            :limit="5"
-            class="avatar-uploader"
-            action="https://jsonplaceholder.typicode.com/posts/"
-            :show-file-list="false"
-            :on-success="handleAvatarSuccess"
-            :before-upload="beforeAvatarUpload"
-          >
-            <!-- <img v-if="imageUrl" :src="imageUrl" class="avatar" />
-            <i v-else class="el-icon-plus avatar-uploader-icon"></i> -->
-          </el-upload>
+        <el-form-item label="介绍封面" prop="courseImgUrl">
+          <upload-image v-model="course.courseImgUrl" />
         </el-form-item>
       </div>
       <div v-show="activeStep === 2">
@@ -119,21 +97,21 @@
           </el-switch>
         </el-form-item>
         <template v-if="course.activityCourse">
-          <el-form-item label="开始时间" prop="activityCourseDTO.beginTime">
+          <el-form-item label="开始时间">
             <el-date-picker
               v-model="course.activityCourseDTO.beginTime"
-              type="date"
+              type="datetime"
               placeholder="选择日期时间"
-              :value-format="formatType"
+              value-format="yyyy-MM-ddTHH:mm:ss.SSSZ"
             >
             </el-date-picker>
           </el-form-item>
-          <el-form-item label="结束时间" prop="activityCourseDTO.endTime">
+          <el-form-item label="结束时间">
             <el-date-picker
               v-model="course.activityCourseDTO.endTime"
-              type="date"
+              type="datetime"
               placeholder="选择日期时间"
-              :value-format="formatType"
+              value-format="yyyy-MM-ddTHH:mm:ss.SSSZ"
             >
             </el-date-picker>
           </el-form-item>
@@ -157,9 +135,10 @@
       </div>
       <div v-show="activeStep === 4">
         <el-form-item label="课程详情" prop="courseDescriptionMarkDown">
-          <el-input type="textarea" v-model="course.courseDescriptionMarkDown">
-          </el-input>
-          <!-- <text-editor v-model="course.courseDescriptionMarkDown" /> -->
+          <text-editor
+            v-if="activeStep === 4"
+            v-model="course.courseDescriptionMarkDown"
+          />
         </el-form-item>
         <el-form-item label="是否发布" prop="status">
           <el-switch
@@ -197,31 +176,31 @@ import { Form } from "element-ui";
 import Vue from "vue";
 import { saveOrUpdateCourse, getCourseById } from "@/services/course";
 import moment from "moment";
+import uploadImage from "./components/uploadImage.vue";
+import TextEditor from "@/components/TextEditor/index.vue";
 
 export default Vue.extend({
   props: {},
+  components: {
+    uploadImage,
+    TextEditor,
+  },
   data() {
     return {
-      formatType: "YYYY-MM-DD",
       courseId: "",
       activeStep: 0,
       stepMenu: ["基本信息", "封面上传", "销售信息", "秒杀活动", "课程详情"],
-      // num: 1,
-      // imageUrl: "",
-      // switchValue: false,
-      // startDate: "",
-      // endDate: "",
       course: {
         // id: 0,
-        courseName: "",
-        brief: "",
+        courseName: "名称",
+        brief: "简介",
         teacherDTO: {
           // id: 0,
           // courseId: 0,
-          teacherName: "",
+          teacherName: "老师",
           teacherHeadPicUrl: "",
-          position: "",
-          description: "",
+          position: "老师",
+          description: "描述",
         },
         courseDescriptionMarkDown: "",
         price: 0,
@@ -233,8 +212,8 @@ export default Vue.extend({
         courseListImg: "",
         courseImgUrl: "",
         sortNum: 0,
-        previewFirstField: "",
-        previewSecondField: "",
+        previewFirstField: "概述1",
+        previewSecondField: "概述2",
         status: 0, // 0：未发布，1：已发布
         sales: 0,
         activityCourse: false, // 是否开启活动秒杀
@@ -272,13 +251,13 @@ export default Vue.extend({
         "teacherDTO.description": [
           { required: true, message: "请输入讲师简介", trigger: "blur" },
         ],
-        previewField: [
-          {
-            required: true,
-            validator: this.validatePreviewField,
-            trigger: "blur",
-          },
-        ],
+        // previewField: [
+        //   {
+        //     required: true,
+        //     validator: this.validatePreviewField,
+        //     trigger: "blur",
+        //   },
+        // ],
         sortNum: [
           { required: true, message: "请输入课程排序", trigger: "blur" },
         ],
@@ -299,29 +278,17 @@ export default Vue.extend({
       const { data } = await getCourseById(this.courseId);
       const { activityCourseDTO } = data.data;
       if (activityCourseDTO) {
-        activityCourseDTO.beginTime = moment(
-          activityCourseDTO.beginTime
-        ).format(this.formatType);
-        activityCourseDTO.endTime = moment(activityCourseDTO.endTime).format(
-          this.formatType
-        );
+        activityCourseDTO.beginTime =
+          moment(activityCourseDTO.beginTime).format(
+            "YYYY-MM-DDTHH:mm:ss.SSS"
+          ) + "Z";
+        activityCourseDTO.endTime =
+          moment(activityCourseDTO.endTime).format("YYYY-MM-DDTHH:mm:ss.SSS") +
+          "Z";
+      } else {
+        data.data.activityCourseDTO = this.course.activityCourseDTO;
       }
       this.course = data.data;
-    },
-    handleAvatarSuccess(res: any, file: any) {
-      // this.imageUrl = URL.createObjectURL(file.raw);
-    },
-    beforeAvatarUpload(file: any) {
-      const isJPG = file.type === "image/jpeg";
-      const isLt2M = file.size / 1024 / 1024 < 2;
-
-      if (!isJPG) {
-        this.$message.error("上传头像图片只能是 JPG 格式!");
-      }
-      if (!isLt2M) {
-        this.$message.error("上传头像图片大小不能超过 2MB!");
-      }
-      return isJPG && isLt2M;
     },
     // 下一步
     handleNextStep() {
@@ -362,29 +329,5 @@ export default Vue.extend({
   width: max-content;
   padding-top: 20px;
   margin: 0 auto;
-}
-::v-deep .avatar-uploader .el-upload {
-  border: 1px dashed #d9d9d9;
-  border-radius: 6px;
-  cursor: pointer;
-  position: relative;
-  overflow: hidden;
-  border: 1px dashed #ccc;
-}
-::v-deep .avatar-uploader .el-upload:hover {
-  border-color: #409eff;
-}
-.avatar-uploader-icon {
-  font-size: 28px;
-  color: #8c939d;
-  width: 178px;
-  height: 178px;
-  line-height: 178px;
-  text-align: center;
-}
-.avatar {
-  width: 178px;
-  height: 178px;
-  display: block;
 }
 </style>

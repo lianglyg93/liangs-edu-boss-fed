@@ -115,9 +115,7 @@
 </template>
 <script lang="ts">
 import Vue from "vue";
-import moment from "moment";
 import { getQueryCourses, changeState } from "@/services/course";
-import { getAllRoles } from "@/services/role";
 
 export default Vue.extend({
   components: {},
