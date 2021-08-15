@@ -93,7 +93,16 @@
             <el-button size="small" @click="setUserRole(scope.row)"
               >编辑</el-button
             >
-            <el-button size="small" @click="setUserRole(scope.row)"
+            <el-button
+              size="small"
+              @click="
+                $router.push({
+                  name: 'courseSections',
+                  params: {
+                    courseId: scope.row.id,
+                  },
+                })
+              "
               >内容管理</el-button
             >
           </template>

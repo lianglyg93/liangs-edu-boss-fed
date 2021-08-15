@@ -48,8 +48,26 @@ const routes: Array<RouteConfig> = [
         name: "addOrEditCourse",
         component: () =>
           import(
-            /* webpackChunkName: 'course' */ "@/views/course/addOrEditCourse.vue"
+            /* webpackChunkName: 'addOrEditCourse' */ "@/views/course/addOrEditCourse.vue"
           ),
+      },
+      {
+        path: "/courseSections/:courseId",
+        name: "courseSections",
+        component: () =>
+          import(
+            /* webpackChunkName: 'courseSections' */ "@/views/course/sections.vue"
+          ),
+        props: true,
+      },
+      {
+        path: "/courseVedio/:courseId",
+        name: "courseVedio",
+        component: () =>
+          import(
+            /* webpackChunkName: 'courseVedio' */ "@/views/course/video.vue"
+          ),
+        props: true,
       },
       {
         path: "/menu",

@@ -26,9 +26,10 @@ export const saveOrUpdateCourse = (data: any) => {
   });
 };
 
+//上传
 export const uploadCourseImage = (
   data: any,
-  onUploadProgress: (progressEvent: ProgressEvent) => void
+  onUploadProgress?: (progressEvent: ProgressEvent) => void
 ) => {
   return request({
     method: "POST",
@@ -44,6 +45,41 @@ export const getCourseById = (courseId: string | number) => {
     url: "/boss/course/getCourseById",
     params: {
       courseId,
+    },
+  });
+};
+//获取课程章节
+export const getSectionAndLesson = (courseId: string | number) => {
+  return request({
+    method: "GET",
+    url: "/boss/course/section/getSectionAndLesson",
+    params: {
+      courseId,
+    },
+  });
+};
+
+export const saveOrUpdateSection = (data: any) => {
+  return request({
+    method: "POST",
+    url: "/boss/course/section/saveOrUpdateSection",
+    data,
+  });
+};
+export const saveOrUpdateLesson = (data: any) => {
+  return request({
+    method: "POST",
+    url: "/boss/course/lesson/saveOrUpdate",
+    data,
+  });
+};
+
+export const getSectionById = (sectionId: string | number) => {
+  return request({
+    method: "GET",
+    url: "/boss/course/section/getBySectionId",
+    params: {
+      sectionId,
     },
   });
 };

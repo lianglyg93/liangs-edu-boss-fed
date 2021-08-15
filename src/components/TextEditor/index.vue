@@ -3,6 +3,7 @@
 </template>
 
 <script lang="ts">
+import { uploadCourseImage } from "@/services/course";
 import Vue from "vue";
 import E from "wangeditor";
 
@@ -32,13 +33,18 @@ export default Vue.extend({
       editor.txt.html(this.value);
       console.log("this.value==", this.value);
 
-      editor.config.customUploadImg = function (
+      editor.config.customUploadImg = async function (
         resultFiles: any,
         insertImgFn: any
       ) {
-        console.log(resultFiles[0]);
-        console.log(insertImgFn);
-        // insertImgFn(imgUrl);
+        const formData = new FormData();
+        formData.append("file", resultFiles[0]);
+
+        const { data } = await uploadCourseImage(formData);
+
+        if (data.code === "000000") {
+          insertImgFn(data.data.name);
+        }
       };
     },
   },
