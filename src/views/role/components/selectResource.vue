@@ -53,13 +53,6 @@ export default Vue.extend({
         index: this.index,
       });
     },
-    resourceInfo: {
-      handler(val) {
-        console.log("-----");
-      },
-      deep: true,
-      immediate: true,
-    },
   },
   methods: {
     initResourceData() {

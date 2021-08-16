@@ -199,7 +199,8 @@ export default Vue.extend({
       return (isAllSection || isAllLesson) && type !== "inner";
     },
     // 排序
-    async handleSort(draggingNode: any, dropNode: any, type: any) {
+    async handleSort(draggingNode: any, dropNode: any) {
+      console.log(draggingNode);
       try {
         await Promise.all(
           dropNode.parent.childNodes.map((item: any, index: number) => {
