@@ -70,7 +70,7 @@ export default Vue.extend({
       const menuIdList = this.allResourceList.flat();
       const { data } = await allocateRoleResources({
         roleId: this.roleId,
-        menuIdList,
+        resourceIdList: menuIdList,
       });
       if (data.code === "000000") {
         this.$message.success("添加成功");

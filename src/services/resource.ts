@@ -81,7 +81,7 @@ export const getRoleResources = (roleId: string | number = -1) => {
 };
 type AllocateRole = {
   roleId: number | string;
-  menuIdList: number[] | string[];
+  resourceIdList: number[] | string[];
 };
 // 给角色分配资源
 export const allocateRoleResources = (data: AllocateRole) => {

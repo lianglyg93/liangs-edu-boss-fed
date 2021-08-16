@@ -69,11 +69,11 @@ export default Vue.extend({
     this.querySectionById();
   },
   methods: {
-    async querySectionById() {
+    querySectionById() {
       if (this.selectInfo.theme) {
         this.lesson = {
           ...this.selectInfo,
-          sectionId: this.selectInfo.id,
+          // sectionId: this.selectInfo.id,
           courseId: Number(this.courseId),
         };
       }

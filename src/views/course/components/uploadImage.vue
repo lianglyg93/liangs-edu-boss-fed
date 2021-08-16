@@ -65,16 +65,15 @@ export default Vue.extend({
       });
       this.isUploading = false;
       this.percentage = 0;
-      // if (data.code === "000000") {
-      console.log(data);
-      console.log(11111);
-      // console.log(data.data.name);
-      // this.course.courseListImg = data.data.name;
-      this.$emit("input", this.defaultImage);
-
-      // } else {
-      //   this.$message.error(data.mesg);
-      // }
+      if (data.code === "000000") {
+        console.log(data);
+        console.log(11111);
+        // console.log(data.data.name);
+        this.$emit("input", data.data.name);
+      } else {
+        this.$emit("input", this.defaultImage);
+        this.$message.error(data.mesg);
+      }
     },
   },
 });

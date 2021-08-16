@@ -242,6 +242,7 @@ export default Vue.extend({
       }
     },
     handleShowAddLesson(data: any, section: any) {
+      console.log(data);
       if (section?.sectionName) {
         data.sectionName = section.sectionName;
       }
@@ -252,6 +253,7 @@ export default Vue.extend({
     async saveLessonInfo() {
       const addLessonDialog = this.$refs.addLessonDialog as any;
       const lessonInfo = addLessonDialog.lesson;
+      // console.log(lessonInfo);
       const { data } = await saveOrUpdateLesson(lessonInfo);
       if (data.code === "000000") {
         this.querySectionAndLesson();
