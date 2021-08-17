@@ -1,5 +1,7 @@
 # liangs-edu-boss-fed
 
+项目地址：http://106.75.15.83:3000/#/login
+
 ###### 1.说说 application/json 和 application/x-www-form-urlencoded 二者之间的区别。
 
 - 如果请求数据是普通对象，则content-type是application/json，告诉服务器请求的主题内容是json格式的字符串，服务器端会对json字符串进行解析，

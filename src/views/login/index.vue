@@ -49,8 +49,8 @@ export default Vue.extend({
     return {
       isLoginLoading: false,
       ruleForm: {
-        phone: "18201288771",
-        password: "111111",
+        phone: "",
+        password: "",
       },
       rules: {
         phone: [
